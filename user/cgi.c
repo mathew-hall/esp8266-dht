@@ -19,7 +19,7 @@ Some random cgi routines.
 #include "httpd.h"
 #include "cgi.h"
 #include "io.h"
-#include "dht22.h"
+#include "dht.h"
 #include "espmissingincludes.h"
 
 //cause I can't be bothered to write an ioGetLed()

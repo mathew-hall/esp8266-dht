@@ -15,7 +15,7 @@
 #include "ets_sys.h"
 #include "httpd.h"
 #include "io.h"
-#include "dht22.h"
+#include "dht.h"
 #include "httpdespfs.h"
 #include "cgi.h"
 #include "cgiwifi.h"
@@ -44,7 +44,7 @@ HttpdBuiltInUrl builtInUrls[]={
 void user_init(void) {
 	stdoutInit();
 	ioInit();
-	DHTInit();
+	DHTInit(SENSOR_DHT22);
 	httpdInit(builtInUrls, 80);
 	os_printf("\nReady\n");
 }
