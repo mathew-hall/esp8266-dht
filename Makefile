@@ -12,16 +12,16 @@ BUILD_BASE	= build
 FW_BASE		= firmware
 
 # Base directory for the compiler
-XTENSA_TOOLS_ROOT ?= /opt/Espressif/crosstool-NG/builds/xtensa-lx106-elf/bin
+XTENSA_TOOLS_ROOT ?= /opt/xtensa-lx106-elf/bin
 
 #Extra Tensilica includes from the ESS VM
 SDK_EXTRA_INCLUDES ?= /opt/Espressif/include
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= /opt/Espressif/ESP8266_SDK
+SDK_BASE	?=/home/esp8266/Share/esp_iot_sdk
 
 #Esptool.py path and port
-ESPTOOL		?= esptool.py
+ESPTOOL		?= /home/esp8266/Share/esp_iot_sdk/esptool.py
 ESPPORT		?= /dev/ttyUSB0
 
 # name for the target project
@@ -57,6 +57,7 @@ FW_FILE_1	= 0x00000
 FW_FILE_1_ARGS	= -bo $@ -bs .text -bs .data -bs .rodata -bc -ec
 FW_FILE_2	= 0x40000
 FW_FILE_2_ARGS	= -es .irom0.text $@ -ec
+FW_FILE_3	= webpages.espfs
 
 # select which tools to use as compiler, librarian and linker
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
@@ -137,7 +138,7 @@ firmware:
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	-$(ESPTOOL) --port $(ESPPORT) write_flash 0x00000 firmware/0x00000.bin
-	sleep 3
+	sleep 10
 	-$(ESPTOOL) --port $(ESPPORT) write_flash 0x40000 firmware/0x40000.bin
 
 webpages.espfs: html/ mkespfsimage/mkespfsimage
@@ -158,6 +159,7 @@ clean:
 
 	$(Q) rm -f $(FW_FILE_1)
 	$(Q) rm -f $(FW_FILE_2)
+	$(Q) rm -f $(FW_FILE_3)
 	$(Q) rm -rf $(FW_BASE)
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call compile-objects,$(bdir))))

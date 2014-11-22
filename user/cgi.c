@@ -19,12 +19,13 @@ Some random cgi routines.
 #include "httpd.h"
 #include "cgi.h"
 #include "io.h"
+#include "dht22.h"
 #include "espmissingincludes.h"
 
 //cause I can't be bothered to write an ioGetLed()
 static char currLedState=0;
 
-//Cgi that turns the LED on or off according to the 'led' param in the POST data
+//Cgi that turns the LED on or off according to the 'led' param in the GET data
 int ICACHE_FLASH_ATTR cgiLed(HttpdConnData *connData) {
 	int len;
 	char buff[1024];
@@ -34,7 +35,7 @@ int ICACHE_FLASH_ATTR cgiLed(HttpdConnData *connData) {
 		return HTTPD_CGI_DONE;
 	}
 
-	len=httpdFindArg(connData->postBuff, "led", buff, sizeof(buff));
+	len=httpdFindArg(connData->getArgs, "led", buff, sizeof(buff));
 	if (len!=0) {
 		currLedState=atoi(buff);
 		ioLed(currLedState);
@@ -98,3 +99,22 @@ int ICACHE_FLASH_ATTR cgiReadFlash(HttpdConnData *connData) {
 	if (*pos>=0x40200000+(512*1024)) return HTTPD_CGI_DONE; else return HTTPD_CGI_MORE;
 }
 
+//Template code for the DHT 22 page.
+void ICACHE_FLASH_ATTR tplDHT(HttpdConnData *connData, char *token, void **arg) {
+	char buff[128];
+	if (token==NULL) return;
+
+	float * r = readDHT();
+	float lastTemp=r[0];
+	float lastHum=r[1];
+	
+	os_strcpy(buff, "Unknown");
+	if (os_strcmp(token, "temperature")==0) {
+			os_sprintf(buff, "%d.%d", (int)(lastTemp),(int)((lastTemp - (int)lastTemp)*100) );		
+	}
+	if (os_strcmp(token, "humidity")==0) {
+			os_sprintf(buff, "%d.%d", (int)(lastHum),(int)((lastHum - (int)lastHum)*100) );		
+	}	
+	
+	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));
+}

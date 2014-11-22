@@ -9,12 +9,13 @@
  * ----------------------------------------------------------------------------
  */
 
-
 #include "espmissingincludes.h"
-#include "ets_sys.h"
 #include "osapi.h"
+
+#include "ets_sys.h"
 #include "httpd.h"
 #include "io.h"
+#include "dht22.h"
 #include "httpdespfs.h"
 #include "cgi.h"
 #include "cgiwifi.h"
@@ -24,6 +25,7 @@ HttpdBuiltInUrl builtInUrls[]={
 	{"/", cgiRedirect, "/index.tpl"},
 	{"/flash.bin", cgiReadFlash, NULL},
 	{"/led.tpl", cgiEspFsTemplate, tplLed},
+	{"/dht22.tpl", cgiEspFsTemplate, tplDHT},
 	{"/index.tpl", cgiEspFsTemplate, tplCounter},
 	{"/led.cgi", cgiLed, NULL},
 
@@ -42,6 +44,7 @@ HttpdBuiltInUrl builtInUrls[]={
 void user_init(void) {
 	stdoutInit();
 	ioInit();
+	DHTInit();
 	httpdInit(builtInUrls, 80);
 	os_printf("\nReady\n");
 }

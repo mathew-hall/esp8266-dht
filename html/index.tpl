@@ -4,22 +4,15 @@
 </head>
 <body>
 <div id="main">
-<h1>It Works</h1>
+<h1>Main</h1>
 <p>
-If you see this, it means the tiny li'l website in your ESP8266 does actually work. Fyi, this page has
-been loaded <b>%counter%</b> times.
 <ul>
 <li>If you haven't connected this device to your WLAN network now, you can <a href="/wifi">do so.</a></li>
 <li>You can also control the <a href="led.tpl">LED</a>.</li>
+<li>..or view readings of <a href="dht22.tpl">DHT22</a> sensor.</li>
 <li>You can download the raw <a href="flash.bin">contents</a> of the SPI flash rom</li>
-<li>And because I can, here's a link to my <a href="http://spritesmods.com/?f=esphttpd">website</a></ul>
 </ul>
 </p>
-
-<p>And because we're on the Internets now, here are the required pictures of cats:<br />
-<img src="cats/cross-eyed-cat.jpg"><br />
-<img src="cats/junge-katze-iv.jpg"><br />
-<img src="cats/kitten-loves-toy.jpg"><br />
-</p>
+<p>Page has been loaded <b>%counter%</b> times.
 </div>
 </body></html>

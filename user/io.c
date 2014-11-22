@@ -8,20 +8,20 @@
  * ----------------------------------------------------------------------------
  */
 
-
+#include "ets_sys.h"
+#include "osapi.h"
 #include "espmissingincludes.h"
 #include "c_types.h"
 #include "user_interface.h"
 #include "espconn.h"
 #include "mem.h"
-#include "osapi.h"
 #include "gpio.h"
 
-
-#define LEDGPIO 2
+#define LEDGPIO 13
 #define BTNGPIO 0
 
 static ETSTimer resetBtntimer;
+
 
 void ICACHE_FLASH_ATTR ioLed(int ena) {
 	//gpio_output_set is overkill. ToDo: use better mactos
@@ -48,9 +48,12 @@ static void ICACHE_FLASH_ATTR resetBtnTimerCb(void *arg) {
 }
 
 void ioInit() {
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
+	
+	//Set GPIO13 to output mode for LED
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U, FUNC_GPIO13);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
 	gpio_output_set(0, 0, (1<<LEDGPIO), (1<<BTNGPIO));
+	
 	os_timer_disarm(&resetBtntimer);
 	os_timer_setfn(&resetBtntimer, resetBtnTimerCb, NULL);
 	os_timer_arm(&resetBtntimer, 500, 1);
