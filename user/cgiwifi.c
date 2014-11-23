@@ -83,12 +83,39 @@ void ICACHE_FLASH_ATTR wifiScanDoneCb(void *arg, STATUS status) {
 	cgiWifiAps.scanInProgress=0;
 }
 
+static void print_wifi_status(uint8 station_status){
+    os_printf("Station status: ");
+    switch(station_status){
+        case STATION_IDLE:
+        os_printf("IDLE");
+        break;
+        case STATION_CONNECTING:
+        os_printf("CONNECTING");
+        break;
+        case STATION_WRONG_PASSWORD:
+        os_printf("WRONG_PASSWORD");
+        break;
+        case STATION_NO_AP_FOUND:
+        os_printf("NO_AP_FOUND");
+        break;
+        case STATION_CONNECT_FAIL:
+        os_printf("CONNECT_FAIL");
+        break;
+        case STATION_GOT_IP:
+        os_printf("GOT_IP");
+        break;
+    }
+    os_printf("\n");
+}
 
 //Routine to start a WiFi access point scan.
 static void ICACHE_FLASH_ATTR wifiStartScan() {
 	int x;
 	cgiWifiAps.scanInProgress=1;
 	x=wifi_station_get_connect_status();
+    
+        os_printf("Starting AP Scan...\n");
+        print_wifi_status(x);
 	if (x!=STATION_GOT_IP) {
 		//Unit probably is trying to connect to a bogus AP. This messes up scanning. Stop that.
 		os_printf("STA status = %d. Disconnecting STA...\n", x);
@@ -135,6 +162,8 @@ static struct station_config stconf;
 //the connect succeeds, this gets the module in STA-only mode.
 static void ICACHE_FLASH_ATTR resetTimerCb(void *arg) {
 	int x=wifi_station_get_connect_status();
+        os_printf("WiFi State Update:\n");
+        print_wifi_status(x);
 	if (x==STATION_GOT_IP) {
 		//Go to STA mode. This needs a reset, so do that.
 		wifi_set_opmode(1);
@@ -152,6 +181,7 @@ static void ICACHE_FLASH_ATTR reassTimerCb(void *arg) {
 	static ETSTimer resetTimer;
 	wifi_station_disconnect();
 	wifi_station_set_config(&stconf);
+    os_printf("Connecting to %s with password %s", stconf.ssid, stconf.password);
 	wifi_station_connect();
 	x=wifi_get_opmode();
 	if (x!=1) {
@@ -180,11 +210,13 @@ int ICACHE_FLASH_ATTR cgiWiFiConnect(HttpdConnData *connData) {
 
 	os_strncpy((char*)stconf.ssid, essid, 32);
 	os_strncpy((char*)stconf.password, passwd, 64);
+    
+    os_printf("Will connect to %s using password %s", essid, passwd);
 
 	//Schedule disconnect/connect
 	os_timer_disarm(&reassTimer);
 	os_timer_setfn(&reassTimer, reassTimerCb, NULL);
-#if 0
+#if 1
 	os_timer_arm(&reassTimer, 1000, 0);
 
 	httpdRedirect(connData, "connecting.html");
