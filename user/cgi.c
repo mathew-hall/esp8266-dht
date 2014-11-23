@@ -104,9 +104,9 @@ void ICACHE_FLASH_ATTR tplDHT(HttpdConnData *connData, char *token, void **arg) 
 	char buff[128];
 	if (token==NULL) return;
 
-	float * r = readDHT();
-	float lastTemp=r[0];
-	float lastHum=r[1];
+	struct sensor_reading* r = readDHT();
+	float lastTemp=r->temperature;
+	float lastHum=r->humidity;
 	
 	os_strcpy(buff, "Unknown");
 	if (os_strcmp(token, "temperature")==0) {
@@ -114,6 +114,9 @@ void ICACHE_FLASH_ATTR tplDHT(HttpdConnData *connData, char *token, void **arg) 
 	}
 	if (os_strcmp(token, "humidity")==0) {
 			os_sprintf(buff, "%d.%d", (int)(lastHum),(int)((lastHum - (int)lastHum)*100) );		
+	}
+	if(os_strcmp(token, "sensor_present") == 0){
+		os_sprintf(buff, r->success?"is":"isn't");
 	}	
 	
 	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));
