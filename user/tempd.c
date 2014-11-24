@@ -22,7 +22,9 @@ static void broadcastReading(void* arg){
     char buf[128];
 
     struct sensor_reading* result = readDHT();
-    
+    if(!result->success){
+        return;
+    }
     os_sprintf(buf, "{\"type\":\"DHT11\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", (int)(100 * result->temperature), (int)(100 * result->humidity));
     
     espconn_sent(&tempConn, (uint8*)buf, os_strlen(buf));
