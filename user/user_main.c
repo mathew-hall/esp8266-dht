@@ -45,7 +45,7 @@ HttpdBuiltInUrl builtInUrls[]={
 void user_init(void) {
 	stdoutInit();
 	ioInit();
-	DHTInit(SENSOR_DHT11);
+	DHTInit(SENSOR_DHT11, 30000);
 	httpdInit(builtInUrls, 80);
         wifiCheck();
 	os_printf("\nReady\n");

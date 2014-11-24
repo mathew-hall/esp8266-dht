@@ -12,4 +12,4 @@ struct sensor_reading{
 
 void ICACHE_FLASH_ATTR DHT(void);
 struct sensor_reading * ICACHE_FLASH_ATTR readDHT(void);
-void DHTInit(enum sensor_type);
+void DHTInit(enum sensor_type, uint32_t polltime);
