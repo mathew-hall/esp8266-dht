@@ -21,6 +21,7 @@
 #include "cgiwifi.h"
 #include "stdout.h"
 #include "wifi.h"
+#include "tempd.h"
 
 HttpdBuiltInUrl builtInUrls[]={
 	{"/", cgiRedirect, "/index.tpl"},
@@ -48,5 +49,6 @@ void user_init(void) {
 	DHTInit(SENSOR_DHT11, 30000);
 	httpdInit(builtInUrls, 80);
         wifiCheck();
+        tempdInit();
 	os_printf("\nReady\n");
 }
