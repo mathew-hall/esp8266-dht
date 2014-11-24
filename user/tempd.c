@@ -9,6 +9,18 @@
 #include "tempd.h"
 #include "dht.h"
 
+
+/*
+ * ----------------------------------------------------------------------------
+ * "THE MODIFIED BEER-WARE LICENSE" (Revision 42):
+ * Mathew Hall wrote this file. As long as you
+ * retain
+ * this notice you can do whatever you want with this stuff. If we meet some
+ * day,
+ * and you think this stuff is worth it, you can buy sprite_tm a beer in return.
+ * ----------------------------------------------------------------------------
+ */
+
 static struct espconn tempConn;
 static struct _esp_udp socket;
 static ip_addr_t master_addr;
