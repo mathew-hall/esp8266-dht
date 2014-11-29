@@ -8,6 +8,7 @@
 #include "io.h"
 #include "tempd.h"
 #include "dht.h"
+#include "ds18b20.h"
 
 
 /*
@@ -32,12 +33,19 @@ static ETSTimer broadcastTimer;
 
 static void broadcastReading(void* arg){
     char buf[128];
-
+    os_printf("Sending heartbeat\n");
     struct sensor_reading* result = readDHT();
+    if(!result->success){
+        goto ds;
+    }
+    os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", result->source,(int)(100 * result->temperature), (int)(100 * result->humidity));
+    ds:
+    result = readDS18B20();
+    os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", result->source, (int)(100 * result->temperature), (int)(100 * result->humidity));
+    
     if(!result->success){
         return;
     }
-    os_sprintf(buf, "{\"type\":\"DHT11\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", (int)(100 * result->temperature), (int)(100 * result->humidity));
     
     espconn_sent(&tempConn, (uint8*)buf, os_strlen(buf));
 }

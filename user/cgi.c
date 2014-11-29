@@ -20,6 +20,7 @@ Some random cgi routines.
 #include "cgi.h"
 #include "io.h"
 #include "dht.h"
+#include "ds18b20.h"
 #include "espmissingincludes.h"
 
 //cause I can't be bothered to write an ioGetLed()
@@ -117,7 +118,16 @@ void ICACHE_FLASH_ATTR tplDHT(HttpdConnData *connData, char *token, void **arg) 
 	}
 	if(os_strcmp(token, "sensor_present") == 0){
 		os_sprintf(buff, r->success?"is":"isn't");
-	}	
+	}
+        r = readDS18B20();
+        lastTemp=r->temperature;
+        if(os_strcmp(token, "ds_temperature") == 0){
+            if(r->success){
+                os_sprintf(buff,"%d.%d", (int)(lastTemp),(int)((lastTemp - (int)lastTemp)*100));
+            }else{
+                os_sprintf(buff, "NA");
+            }
+        }
 	
 	espconn_sent(connData->conn, (uint8 *)buff, os_strlen(buff));
 }

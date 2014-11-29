@@ -53,10 +53,12 @@ static inline void delay_ms(int sleep) {
     os_delay_us(1000 * sleep); 
 }
 
-static struct sensor_reading r;
+static struct sensor_reading reading = {
+    .source = "DHT11", .success = 0
+};
 
 struct sensor_reading *ICACHE_FLASH_ATTR readDHT(void) { 
-    return &r;
+    return &reading;
 }
     
     
@@ -167,17 +169,17 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
     goto fail;
   }
 
-  r.temperature = scale_temperature(data);
-  r.humidity = scale_humidity(data);
-  os_printf("Temp =  %d *C, Hum = %d %%\n", (int)(r.temperature * 100),
-            (int)(r.humidity * 100));
+  reading.temperature = scale_temperature(data);
+  reading.humidity = scale_humidity(data);
+  os_printf("Temp =  %d *C, Hum = %d %%\n", (int)(reading.temperature * 100),
+            (int)(reading.humidity * 100));
 
-  r.success = 1;
+  reading.success = 1;
   return;
 fail:
   
   os_printf("Failed to get reading, dying\n");
-  r.success = 0;
+  reading.success = 0;
 }
 
 

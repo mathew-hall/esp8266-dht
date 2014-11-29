@@ -6,6 +6,8 @@ enum sensor_type{
 struct sensor_reading{
 	float temperature;
 	float humidity;
+	const char* source;
+	uint8_t sensor_id[16];
 	BOOL success;
 };
 
