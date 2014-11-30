@@ -204,11 +204,11 @@ int reset(void)
 
 struct sensor_reading* readDS18B20(void)
 {
-    os_printf("Resetting OW bus on port 0\n");
+
     reset();
     write_byte(DS1820_SKIP_ROM);  // skip ROM command
     write_byte(DS1820_CONVERT_T); // convert T command
-    os_printf("Sent Convert_T, waiting to read scratchpad\n");
+
     os_delay_us(750);
     reset();
     write_byte(DS1820_SKIP_ROM);		// skip ROM command
@@ -218,9 +218,8 @@ struct sensor_reading* readDS18B20(void)
     for (int k=0;k<9;k++){
         get[k]=read_byte();
     }
-    os_printf("\n ScratchPAD DATA = %X %X %X %X %X %X %X %X %X\n",get[8],get[7],get[6],get[5],get[4],get[3],get[2],get[1],get[0]);
+    //os_printf("\n ScratchPAD DATA = %X %X %X %X %X %X %X %X %X\n",get[8],get[7],get[6],get[5],get[4],get[3],get[2],get[1],get[0]);
 
-    os_printf("Checking CRC... ");
     dowcrc = 0;
     for(int i = 0; i < 8; i++){
         ow_crc(get[i]);
@@ -231,7 +230,6 @@ struct sensor_reading* readDS18B20(void)
         reading.success = 0;
         return &reading;
     }    
-    os_printf("it's good!\n");
     uint8_t temp_msb = get[1]; // Sign byte + lsbit
     uint8_t temp_lsb = get[0]; // Temp data plus lsb
     

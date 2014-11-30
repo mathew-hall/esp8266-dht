@@ -31,23 +31,19 @@ static ip_addr_t master_addr;
 
 static ETSTimer broadcastTimer;
 
+static void transmitReading(struct sensor_reading* result){
+    char buf[256];
+    os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\", \"success\":\"%d\"}\n", result->source,(int)(100 * result->temperature), (int)(100 * result->humidity), result->success);
+    espconn_sent(&tempConn, (uint8*)buf, os_strlen(buf));
+}
 static void broadcastReading(void* arg){
-    char buf[128];
+
     os_printf("Sending heartbeat\n");
     struct sensor_reading* result = readDHT();
-    if(!result->success){
-        goto ds;
-    }
-    os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", result->source,(int)(100 * result->temperature), (int)(100 * result->humidity));
-    ds:
+    transmitReading(result);    
     result = readDS18B20();
-    os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\"}\n", result->source, (int)(100 * result->temperature), (int)(100 * result->humidity));
+    transmitReading(result);
     
-    if(!result->success){
-        return;
-    }
-    
-    espconn_sent(&tempConn, (uint8*)buf, os_strlen(buf));
 }
 
 static void dnsLookupCb(const char *name, ip_addr_t *ipaddr, void *arg){
