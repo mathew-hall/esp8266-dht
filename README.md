@@ -2,13 +2,15 @@
 
 This application builds on [Martin's DHT22 webserver](http://harizanov.com/2014/11/esp8266-powered-web-server-led-control-dht22-temperaturehumidity-sensor-reading/) implementation, which uses [sprite_tm's ESP8266 httpd](http://www.esp8266.com/viewtopic.php?f=6&t=376).
 
-This version adds a check to make sure a DHT sensor is connected, and prevents the sensor being polled past the manufacturer's maximum frequency. It also logs sensor readings to a remote machine over the network.
+This version adds a check to make sure a DHT sensor is connected, and prevents the sensor being polled past the manufacturer's maximum frequency. It also logs sensor readings to a remote machine over the network as JSON, sent over UDP.
+
+In addition to a DHT sensor, a DS18B20 1wire temperature sensor can be attached to port 0. If there's one attached, readings will be sent to the logging server and shown in the dht22.tpl page on the webserver.
 
 # Configuration
 
 There are a few parameters that can be changed:
  * user/user_main.c: sensor type (DHT11 or DHT22) and poll rate
- * tempd.c: hostname and UDP port to send readings
+ * tempd.c: hostname and UDP port to send readings, poll rate for readings
  
 # Building
 
