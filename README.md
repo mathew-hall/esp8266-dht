@@ -29,6 +29,8 @@ This code is entirely based on [Sprite_tm](http://www.esp8266.com/viewtopic.php?
 
 The webserver uses Scott Vokes's [heatshrink](https://github.com/atomicobject/heatshrink) library. See the LICENSE file in `lib/heatshrink` for the full text of the license.
 
-The DHT code is based on [Martin's DHT22 cgi script](http://harizanov.com/2014/11/esp8266-powered-web-server-led-control-dht22-temperaturehumidity-sensor-reading/). The revised DHT driver itself is based on the implementation from Adafruit Industries. See the comment in dht.c for the full text of the license. 
+The DHT code is based on [Martin's DHT22 cgi script](http://harizanov.com/2014/11/esp8266-powered-web-server-led-control-dht22-temperaturehumidity-sensor-reading/). The revised DHT driver itself is based on the implementation from Adafruit Industries. See the comment in dht.c for the full text of the license. Code for the CRC calculation is taken from [Maxim AN162](http://www.maximintegrated.com/en/app-notes/index.mvp/id/162).
+
+The ds18b20 driver includes code based on [Grant Forest's Energia](http://forum.43oh.com/topic/3314-energia-library-onewire-ds18b20-430-stellaris/) code and licensed under the GPL. See the file for the full license text. 
 
 The temperature logger is licensed under a modified Beer-wrare license. See the header for `tempd.c` for details.
