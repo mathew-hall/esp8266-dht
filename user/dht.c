@@ -22,7 +22,7 @@
 
 #define MAXTIMINGS 10000
 #define DHT_MAXCOUNT 32000
-#define BREAKTIME 20
+#define BREAKTIME 30
 
 enum sensor_type SENSOR;
 
@@ -111,7 +111,7 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
   // GPIO_OUTPUT_SET(2, 1);
 
   GPIO_DIS_OUTPUT(2);
-  os_delay_us(20);
+  os_delay_us(40);
 
   // Set pin to input with pullup
   // PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO2_U);
