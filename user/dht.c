@@ -22,7 +22,7 @@
 
 #define MAXTIMINGS 10000
 #define DHT_MAXCOUNT 32000
-#define BREAKTIME 30
+#define BREAKTIME 32
 
 enum sensor_type SENSOR;
 
@@ -161,8 +161,12 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
     os_printf("Got too few bits: %d should be at least 40", bits_in);
     goto fail;
   }
+  
 
   int checksum = (data[0] + data[1] + data[2] + data[3]) & 0xFF;
+  
+  os_printf("DHT: %02x %02x %02x %02x [%02x] CS: %02x", data[0], data[1],data[2],data[3],data[4],checksum);
+  
   if (data[4] != checksum) {
     os_printf("Checksum was incorrect after %d bits. Expected %d but got %d",
               bits_in, data[4], checksum);
