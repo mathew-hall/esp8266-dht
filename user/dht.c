@@ -24,6 +24,8 @@
 #define DHT_MAXCOUNT 32000
 #define BREAKTIME 32
 
+#define DHT_PIN 0
+
 enum sensor_type SENSOR;
 
 static inline float scale_humidity(int *data) {
@@ -100,17 +102,17 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
   data[0] = data[1] = data[2] = data[3] = data[4] = 0;
 
   // Wake up device, 250ms of high
-  GPIO_OUTPUT_SET(2, 1);
+  GPIO_OUTPUT_SET(DHT_PIN, 1);
   delay_ms(500);
 
   // Hold low for 20ms
-  GPIO_OUTPUT_SET(2, 0);
+  GPIO_OUTPUT_SET(DHT_PIN, 0);
   delay_ms(20);
 
   // High for 40ms
   // GPIO_OUTPUT_SET(2, 1);
 
-  GPIO_DIS_OUTPUT(2);
+  GPIO_DIS_OUTPUT(DHT_PIN);
   os_delay_us(40);
 
   // Set pin to input with pullup
@@ -119,26 +121,26 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
   // os_printf("Waiting for gpio2 to drop \n");
 
   // wait for pin to drop?
-  while (GPIO_INPUT_GET(2) == 1 && i < DHT_MAXCOUNT) {
+  while (GPIO_INPUT_GET(DHT_PIN) == 1 && i < DHT_MAXCOUNT) {
     if (i >= DHT_MAXCOUNT) {
       goto fail;
     }
     i++;
   }
 
-  os_printf("Reading DHT\n");
+//  os_printf("Reading DHT\n");
 
   // read data!
   for (i = 0; i < MAXTIMINGS; i++) {
     // Count high time (in approx us)
     counter = 0;
-    while (GPIO_INPUT_GET(2) == laststate) {
+    while (GPIO_INPUT_GET(DHT_PIN) == laststate) {
       counter++;
       os_delay_us(1);
       if (counter == 1000)
         break;
     }
-    laststate = GPIO_INPUT_GET(2);
+    laststate = GPIO_INPUT_GET(DHT_PIN);
 
     if (counter == 1000)
       break;
@@ -191,7 +193,8 @@ void DHTInit(enum sensor_type sensor_type, uint32_t polltime) {
   SENSOR = sensor_type;
   // Set GPIO2 to output mode for DHT22
   PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
-  PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO2_U);
+  PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
+  //PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO2_U);
   
   os_printf("DHT Setup for type %d, poll interval of %d", sensor_type, (int)polltime);
   

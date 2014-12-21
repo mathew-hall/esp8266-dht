@@ -58,7 +58,7 @@ This library works with both 430 and Stellaris using the Energia IDE.
 #define DS1820_ALARMSEARCH 			0xEC
 #define DS1820_CONVERT_T            0x44
 
-#define DS1820_PIN 0
+#define DS1820_PIN 2
 
 static struct sensor_reading reading = {
     .source = "DS18B20", .humidity=-1, .success = 0
@@ -104,6 +104,7 @@ uint8_t LastDeviceFlag;
 
 void setup_DS1820(void){
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
 }
 
 void write_bit(int bit)
