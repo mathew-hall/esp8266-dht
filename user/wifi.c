@@ -26,5 +26,5 @@ static void ICACHE_FLASH_ATTR wifiCheckCb(void *arg) {
 void ICACHE_FLASH_ATTR wifiCheck(void){
     static ETSTimer wifiTimer;
     os_timer_setfn(&wifiTimer, wifiCheckCb, NULL);
-    os_timer_arm(&wifiTimer, 60000, 0);
+    os_timer_arm(&wifiTimer, 5000, 0);
 }
