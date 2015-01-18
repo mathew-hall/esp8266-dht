@@ -23,6 +23,8 @@
  * ----------------------------------------------------------------------------
  */
 
+#define SLEEP_MODE 1
+#define SLEEP_TIME 45
 static struct espconn tempConn;
 static struct _esp_udp socket;
 static ip_addr_t master_addr;
@@ -32,12 +34,21 @@ static ip_addr_t master_addr;
 #define FALLBACK_IP 10,0,0,123
 
 static ETSTimer broadcastTimer;
+static ETSTimer lookupTimer;
+static ETSTimer sleepTimer;
+
 
 static void transmitReading(struct sensor_reading* result){
     char buf[256];
     os_sprintf(buf, "{\"type\":\"%s\", \"temperature\":\"%d\", \"humidity\":\"%d\", \"scale\":\"0.01\", \"success\":\"%d\"}\n", result->source,(int)(100 * result->temperature), (int)(100 * result->humidity), result->success);
     espconn_sent(&tempConn, (uint8*)buf, os_strlen(buf));
 }
+
+static void goToSleep(void* arg){
+    os_printf("Going to deep sleep mode now \n");
+    system_deep_sleep(SLEEP_TIME * 1000 * 1000);
+}
+
 static void broadcastReading(void* arg){
 
     os_printf("Sending heartbeat\n");
@@ -49,8 +60,16 @@ static void broadcastReading(void* arg){
     transmitReading(result);    
     result = readDS18B20();
     transmitReading(result);
-    
+#ifdef SLEEP_MODE
+
+
+    os_printf("Scheduling power down\n");
+    os_timer_setfn(&sleepTimer, goToSleep, NULL);
+    os_timer_arm(&sleepTimer, 2000, 0);
+#endif
 }
+
+
 
 static void dnsLookupCb(const char *name, ip_addr_t *ipaddr, void *arg){
     struct espconn* conn = arg;
@@ -76,9 +95,19 @@ static void dnsLookupCb(const char *name, ip_addr_t *ipaddr, void *arg){
     }
     
     espconn_create(conn);
+#ifdef SLEEP_MODE
+    os_printf("Sending data\n");
+    broadcastReading(NULL);
+#else
     os_printf("Arming broadcast timer\n");
-    os_timer_arm(&broadcastTimer, 25000, 1);
-    
+    os_timer_arm(&broadcastTimer, 60000, 1);
+#endif
+}
+
+static void lookupTask(void* arg){
+    os_sprintf("Attempting to resolve %s\n", DATA_HOST);
+    espconn_gethostbyname(&tempConn, DATA_HOST, &master_addr, dnsLookupCb);
+    os_timer_disarm(&lookupTimer);
 }
 
 void tempdInit(void){
@@ -91,7 +120,8 @@ void tempdInit(void){
         
         master_addr.addr = 0;
         socket.remote_port=DATA_PORT;
-        espconn_gethostbyname(&tempConn, DATA_HOST, &master_addr, dnsLookupCb);
+        os_timer_setfn(&lookupTimer, lookupTask, NULL);
+        os_timer_arm(&lookupTimer, 10000, 1);
     
         os_timer_setfn(&broadcastTimer, broadcastReading, NULL);
 }
