@@ -105,7 +105,7 @@ void ICACHE_FLASH_ATTR tplDHT(HttpdConnData *connData, char *token, void **arg) 
 	char buff[128];
 	if (token==NULL) return;
 
-	struct sensor_reading* r = readDHT();
+	struct sensor_reading* r = readDHT(0);
 	float lastTemp=r->temperature;
 	float lastHum=r->humidity;
 	

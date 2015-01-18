@@ -24,7 +24,7 @@
 #define DHT_MAXCOUNT 32000
 #define BREAKTIME 32
 
-#define DHT_PIN 0
+#define DHT_PIN 2
 
 enum sensor_type SENSOR;
 
@@ -59,9 +59,7 @@ static struct sensor_reading reading = {
     .source = "DHT11", .success = 0
 };
 
-struct sensor_reading *ICACHE_FLASH_ATTR readDHT(void) { 
-    return &reading;
-}
+
     
     
 /** 
@@ -188,6 +186,12 @@ fail:
   reading.success = 0;
 }
 
+struct sensor_reading *ICACHE_FLASH_ATTR readDHT(int force) {
+    if(force){
+        pollDHTCb(NULL);
+    } 
+    return &reading;
+}
 
 void DHTInit(enum sensor_type sensor_type, uint32_t polltime) {
   SENSOR = sensor_type;
@@ -196,7 +200,7 @@ void DHTInit(enum sensor_type sensor_type, uint32_t polltime) {
   PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
   //PIN_PULLUP_EN(PERIPHS_IO_MUX_GPIO2_U);
   
-  os_printf("DHT Setup for type %d, poll interval of %d", sensor_type, (int)polltime);
+  os_printf("DHT Setup for type %d, poll interval of %d\n", sensor_type, (int)polltime);
   
   static ETSTimer dhtTimer;
   os_timer_setfn(&dhtTimer, pollDHTCb, NULL);
