@@ -23,7 +23,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#define SLEEP_MODE 1
+#define SLEEP_MODE 0
 #define SLEEP_TIME 45
 static struct espconn tempConn;
 static struct _esp_udp socket;
@@ -31,7 +31,7 @@ static ip_addr_t master_addr;
 
 #define DATA_PORT 19252
 #define DATA_HOST "bmo.local"
-#define FALLBACK_IP 10,0,0,123
+
 
 static ETSTimer broadcastTimer;
 static ETSTimer lookupTimer;

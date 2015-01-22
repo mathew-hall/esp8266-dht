@@ -6,11 +6,13 @@ This version adds a check to make sure a DHT sensor is connected, and prevents t
 
 In addition to a DHT sensor, a DS18B20 1wire temperature sensor can be attached to port 0. If there's one attached, readings will be sent to the logging server and shown in the dht22.tpl page on the webserver.
 
+If enabled (default is on), the code will try to sleep the ESP chip rather than leave it running. This requires a physical connection between the RST and GPIO16 pin, otherwise the chip won't wake up after going to sleep. The cycle time in "sleep mode" is about one minute.
+
 # Configuration
 
 There are a few parameters that can be changed:
  * user/user_main.c: sensor type (DHT11 or DHT22) and poll rate
- * tempd.c: hostname and UDP port to send readings, poll rate for readings
+ * tempd.c: hostname and UDP port to send readings, poll rate for readings, and fallback IP (needs to be set in `dnsLookupCb`)
  
 # Building
 
