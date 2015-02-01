@@ -34,4 +34,7 @@ void *pvPortZalloc(size_t);
 void uart_div_modify(int no, unsigned int freq);
 void vPortFree(void *ptr);
 void *vPortMalloc(size_t xWantedSize);
+void ets_intr_lock(void);
+void ets_intr_unlock(void);
+void wdt_feed(void); 
 #endif

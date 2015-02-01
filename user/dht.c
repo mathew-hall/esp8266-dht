@@ -99,9 +99,12 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
 
   data[0] = data[1] = data[2] = data[3] = data[4] = 0;
 
+  //disable interrupts, start of critical section
+  os_intr_lock();
+  wdt_feed();
   // Wake up device, 250ms of high
   GPIO_OUTPUT_SET(DHT_PIN, 1);
-  delay_ms(500);
+  delay_ms(20);
 
   // Hold low for 20ms
   GPIO_OUTPUT_SET(DHT_PIN, 0);
@@ -156,6 +159,9 @@ static  void ICACHE_FLASH_ATTR pollDHTCb(void * arg){
       bits_in++;
     }
   }
+
+  //Re-enable interrupts, end of critical section
+  os_intr_unlock();
 
   if (bits_in < 40) {
     os_printf("Got too few bits: %d should be at least 40", bits_in);
