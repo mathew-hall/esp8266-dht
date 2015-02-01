@@ -6,7 +6,7 @@ This version adds a check to make sure a DHT sensor is connected, and prevents t
 
 In addition to a DHT sensor, a DS18B20 1wire temperature sensor can be attached to port 0. If there's one attached, readings will be sent to the logging server and shown in the dht22.tpl page on the webserver.
 
-If enabled (default is on), the code will try to sleep the ESP chip rather than leave it running. This requires a physical connection between the RST and GPIO16 pin, otherwise the chip won't wake up after going to sleep. The cycle time in "sleep mode" is about one minute.
+If enabled (default is off), the code will try to sleep the ESP chip rather than leave it running. This requires a physical connection between the RST and GPIO16 pin, otherwise the chip won't wake up after going to sleep. The cycle time in "sleep mode" is about one minute.
 
 # Configuration
 
@@ -24,6 +24,22 @@ Make sure the IoT SDK and toolchain are set up according to the instructions on 
 	export ESPTOOL="/opt/Espressif/esptool-py/esptool.py"
 
 From the root of this repository, run `make`. This will build the two firmware images. To update the webserver's HTML files, run `make webpages.espfs`.
+
+# Hardware
+
+The whole circuit runs on 3.3V power, which can be obtained using a cheap AMS1117 3.3V module or regulator circuit.
+
+| Pin | Connection                                              |
+| --- | ------------------------------------------------------- |
+| VCC and CH_PD | +3.3V                                         |
+| GPIO0 | DS18B20 DQ pin, pulled to 3.3V through a 4.7k resistor|
+| GPIO2 | DHT11 pin 2, pulled to 3.3V through a 10k resistor    |
+| GND   |  ground                                               |
+| TX    | UART adapter RX                                       |
+| RX    | UART adapter TX                                       |
+| RST   | N/C [or solder to GPIO16 on the module for sleep mode]|
+
+The sensors both need their VCC and GND pins connecting to power and ground respectively.
 
 # Licenses
 
