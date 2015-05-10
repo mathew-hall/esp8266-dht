@@ -41,6 +41,14 @@ The whole circuit runs on 3.3V power, which can be obtained using a cheap AMS111
 
 The sensors both need their VCC and GND pins connecting to power and ground respectively.
 
+## Sleep mode
+
+The sleep mode requires the RST pin to be tied to GPIO16 to allow the chip to wake itself back up. If this change isn't made (and sleep mode is turned on in `tempd.c`) then the board will post a single update and then not do anything until manually reset. 
+
+You'll need to solder a wire from RST to GPIO16. See [Issue #3](https://github.com/mathew-hall/esp8266-dht/issues/3) for the needed bodge. The pitch on the chip is very small, so use a very thin wire. I used an individual strand from an IDE cable.
+
+This might not apply for newer ESP modules.
+
 # Licenses
 
 This code is entirely based on [Sprite_tm](http://www.esp8266.com/viewtopic.php?f=6&t=376)'s httpd implementation for the ESP8266, licensed under the Beer-ware license. See the license headers in the `user` directory for the full text of the license.
